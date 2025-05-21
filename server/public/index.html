@@ -472,137 +472,142 @@
 
   <script>
     
-    document.addEventListener('DOMContentLoaded', function() {
-      const evolutionForm = document.getElementById('evolutionForm');
-      const loadingDiv = document.getElementById('loading');
-      const generateBtn = document.getElementById('generateBtn');
-      const generatedAnimal = document.getElementById('generatedAnimal');
-      const generatedEnvironment = document.getElementById('generatedEnvironment');
-      const generatedName = document.getElementById('generatedName');
-      const errorP = document.getElementById('error');
-
-      evolutionForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
     
-        const animal = document.getElementById('animal').value.trim();
-        const diet = document.getElementById('diet').value;
-        const climate = document.getElementById('climate').value;
-        const environment = document.getElementById('environment').value;
-        const timeOfActivity = document.getElementById('timeOfActivity').value;
-        const movement = document.getElementById('movement').value;
-        const features = document.getElementById('features').value.trim();
+  document.addEventListener('DOMContentLoaded', function() {
+    const evolutionForm = document.getElementById('evolutionForm');
+    const loadingDiv = document.getElementById('loading');
+    const generateBtn = document.getElementById('generateBtn');
+    const generatedAnimal = document.getElementById('generatedAnimal');
+    const generatedEnvironment = document.getElementById('generatedEnvironment');
+    const generatedName = document.getElementById('generatedName');
+    const errorP = document.getElementById('error');
 
-        if (!animal) {
-          alert('Please enter an animal');
-          return;
+    evolutionForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const animal = document.getElementById('animal').value.trim();
+      const diet = document.getElementById('diet').value;
+      const climate = document.getElementById('climate').value;
+      const environment = document.getElementById('environment').value;
+      const timeOfActivity = document.getElementById('timeOfActivity').value;
+      const movement = document.getElementById('movement').value;
+      const features = document.getElementById('features').value.trim();
+
+      if (!animal) {
+        alert('Please enter an animal');
+        return;
+      }
+
+      loadingDiv.style.display = 'block';
+      generateBtn.disabled = true;
+      errorP.style.display = 'none';
+
+      try {
+        
+        let animalPrompt = `Create a full-body, detailed illustration of a ${animal} that evolved over millions of years to survive in ${climate || "different"} conditions.`;
+        let namePrompt = `Create a scientific name for an ${animal} that evolved over millions of years to survive in ${climate || "different"} conditions.`;
+
+        if (environment) {
+          animalPrompt += ` It adapted to live in ${environment}.`;
+          namePrompt += ` It adapted to live in ${environment}.`;
+        }
+        if (timeOfActivity) {
+          animalPrompt += ` It is a ${timeOfActivity} animal.`;
+          namePrompt += ` It is a ${timeOfActivity} animal.`;
+        }
+        if (movement) {
+          animalPrompt += ` It adapted to move by ${movement}.`;
+          namePrompt += ` It adapted to move by ${movement}.`;
+
+          const movementTraits = {
+            flying: " It evolved to have wings and a lightweight body to navigate through the air efficiently.",
+            swimming: " It evolved to have gills, fins, and a streamlined body to swim effectively in water.",
+            climbing: " It developed sharp claws and strong limbs to climb steep surfaces.",
+            slithering: " It evolved a long, flexible body and smooth scales to slither across the ground.",
+            walking: " It adapted strong, muscular legs and paws to walk or run efficiently.",
+          };
+
+          if (movementTraits[movement]) {
+            animalPrompt += movementTraits[movement];
+            namePrompt += movementTraits[movement];
+          }
+        }
+        if (features) {
+          animalPrompt += ` It adapted by developing ${features}.`;
+          namePrompt += ` It adapted by developing ${features}.`;
+        }
+        if (diet) {
+          animalPrompt += ` It is a ${diet} animal.`;
+          namePrompt += ` It is a ${diet} animal.`;
+        }
+
+        animalPrompt += ` Show highly detailed textures, natural lighting, 4K. Don't use text and letters in the image.`;
+
+        let environmentPrompt = `Create a highly realistic 4K rendering of a natural habitat. The environment is a ${environment || "unique biome"} in a ${climate || "moderate"} climate. The time of the day is ${timeOfActivity || "daytime"}. Do not include animals, people, text, or artificial elements. Focus on natural detail, lighting, and composition.`;
+
+        
+        const response = await fetch('http://localhost:4000/generateImages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            animalPrompt,
+            environmentPrompt,
+            namePrompt
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to generate images');
         }
 
         
-        loadingDiv.style.display = 'block';
-        generateBtn.disabled = true;
-        errorP.style.display = 'none';
+        generatedAnimal.src = data.animalImage;
+        generatedEnvironment.src = data.environmentImage;
+        generatedName.textContent = data.name;
+        
+        document.getElementById('imageContainer').style.display = 'flex';
+        generatedAnimal.style.display = 'block';
+        generatedEnvironment.style.display = 'block';
+        generatedName.style.display = 'block';
+        document.getElementById('animalTitle').style.display = 'block';
+        document.getElementById('environmentTitle').style.display = 'block';
 
-        try {
-          
-          const animalPrompt = `Create a realistic illustration of a ${animal} that evolved to live in ${climate || "a new"} climate. ` +
-            `${environment ? `Environment: ${environment}. ` : ''}` +
-            `${timeOfActivity ? `Active during: ${timeOfActivity}. ` : ''}` +
-            `${movement ? `Movement: ${movement}. ` : ''}` +
-            `${features ? `Features: ${features}. ` : ''}` +
-            `${diet ? `Diet: ${diet}. ` : ''}` +
-            `Highly detailed, realistic, 4K quality. No text in image.`;
+        
+        const creatureData = {
+          name: data.name,
+          animalImage: data.animalImage,
+          environmentImage: data.environmentImage,
+          attributes: {
+            animal,
+            diet,
+            climate,
+            environment,
+            timeOfActivity,
+            movement,
+            features
+          },
+          timestamp: new Date().toISOString()
+        };
 
-          const environmentPrompt = `Create a realistic ${climate || ""} ${environment || "environment"} landscape. ` +
-            `${timeOfActivity ? `Time: ${timeOfActivity}. ` : ''}` +
-            `No animals or text. Highly detailed, 4K quality.`;
+        const savedCreatures = JSON.parse(localStorage.getItem('animalBooks') || '[]');
+        savedCreatures.unshift(creatureData);
+        localStorage.setItem('animalBooks', JSON.stringify(savedCreatures));
 
-          const namePrompt = `Create a scientific name (binomial nomenclature) for a ${animal} ` +
-            `that evolved to live in ${climate || "new conditions"}. ` +
-            `${environment ? `Environment: ${environment}. ` : ''}` +
-            `Respond only with the Latin name.`;
-
-         
-          const response = await fetch('http://localhost:4000/generateImages', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              animalPrompt,
-              environmentPrompt,
-              namePrompt
-            }),
-          });
-
-          const data = await response.json();
-
-          if (!response.ok) {
-            throw new Error(data.error || 'Failed to generate images');
-          }
-
-         
-          generatedAnimal.src = data.animalImage;
-          generatedEnvironment.src = data.environmentImage;
-          generatedName.textContent = data.name;
-          
-          document.getElementById('imageContainer').style.display = 'flex';
-          generatedAnimal.style.display = 'block';
-          generatedEnvironment.style.display = 'block';
-          generatedName.style.display = 'block';
-           document.getElementById('animalTitle').style.display = 'block';
-          document.getElementById('environmentTitle').style.display = 'block';
-
-          
-          /*const creatureData = {
-            name: data.name,
-            animalImage: data.animalImage,
-            environmentImage: data.environmentImage,
-            attributes: {
-              animal,
-              diet,
-              climate,
-              environment,
-              timeOfActivity,
-              movement,
-              features
-            },
-            timestamp: new Date().toISOString()
-          };*/
-
-         
-const creatureData = {
-    name: data.name,
-    animalImage: data.animalImage,
-    environmentImage: data.environmentImage,
-    attributes: {
-        animal,
-        diet,
-        climate,
-        environment,
-        timeOfActivity,
-        movement,
-        features
-    },
-    timestamp: new Date().toISOString()
-};
-
-
-          
-          const savedCreatures = JSON.parse(localStorage.getItem('animalBooks') || '[]');
-          savedCreatures.unshift(creatureData);
-          localStorage.setItem('animalBooks', JSON.stringify(savedCreatures));
-
-        } catch (err) {
-          console.error('Error:', err);
-          errorP.textContent = err.message;
-          errorP.style.display = 'block';
-        } finally {
-          loadingDiv.style.display = 'none';
-          generateBtn.disabled = false;
-        }
-      });
+      } catch (err) {
+        console.error('Error:', err);
+        errorP.textContent = err.message;
+        errorP.style.display = 'block';
+      } finally {
+        loadingDiv.style.display = 'none';
+        generateBtn.disabled = false;
+      }
     });
+  });
+
   </script>
 </body>
 </html>
