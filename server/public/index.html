@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Animal Evolution Generator</title>
+  <style>
+    @font-face {
+      font-family: 'Sterion';
+      src: url('fonts/sterion-bllld-webfont.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Toxigenesis';
+      src: url('fonts/toxigenesis.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    body {
+      background-color: #000000;
+      margin: 0;
+      padding: 0;
+      justify-content: center; 
+      align-items: center;
+      background-image: url('images/bitmap-02.png');
+      background-repeat: no-repeat;      
+      background-size: cover;           
+      background-position: center;    
+      cursor: url('images/cursor2.png'), auto;  
+    }
+
+    .container {
+      max-width: 80%;
+      margin: 40px auto;
+      background-color: #fbfaef00;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
+    }
+
+    .box {
+      display: flex;
+      gap: 20px; 
+      align-items: flex-start;
+      max-width: 800px;
+      margin: 40px auto;
+      background-color: #7a7a7a00;
+      padding: 30px;
+      border-radius: 0px;
+      box-shadow: 0 6px 24px rgba(238, 255, 237, 0);
+      border: 2px solid #2d00f5;
+      width: 100%; 
+      box-sizing: border-box;
+      background-color: #000000;
+      justify-content: center; 
+      align-items: center;
+    }
+
+    .box2 {
+      display: flex;
+      flex-direction: column;
+      gap: 10px; 
+      max-width: 430px;
+      margin: 10px auto;
+      background-color: #7a7a7a00;
+      padding: 30px;
+      border-radius: 0px;
+      box-shadow: 0 6px 24px rgba(238, 255, 237, 0);
+      border: 2px solid #2d00f5;
+      width: 100%; 
+      box-sizing: border-box;
+      background-color: #000000;
+    }
+    
+    .dnaContainer{
+      text-align: center;
+    }
+
+    h1 {
+      font-family: 'Sterion';
+      color: #2d00f5;
+      text-align: center;
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      font-family: 'Toxigenesis';
+      background-color: #000000;
+      color: #fa4c01;
+      text-align: center;
+      font-size: 4rem;
+      margin-bottom: 50px;
+      margin-top: 200px;
+    }
+
+    h3 {
+      color: #ffffff;
+      font-weight: normal;
+      text-align: center;
+      font-size: 1rem;
+      font-family: 'Toxigenesis';
+      margin: 0 auto;
+      max-width: 50%;
+      margin-bottom: 50px;
+    }
+
+    h4 {
+        font-family: 'Toxigenesis';
+        color: #ffffff;
+        text-align: center;
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+    }
+    
+    .header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      position: sticky;
+      top: 10px;
+      padding: 10px;
+      border: 2px solid #2d00f5;
+      background-color: #000000;
+      margin: 0 auto;
+      margin-top: 50px;
+      max-width: 90%;
+      height: 10%;
+    }
+
+    .header h1 {
+      text-align: center;
+      margin: 0 auto;
+    }
+
+    #animalTitle,
+    #environmentTitle,
+    #generatedName {
+        display: none;
+    }
+
+    #animal.filled {
+      background-color: #000000; 
+      color: #ffffff;
+      font-family: 'Toxigenesis';
+      border: 2px solid #2d00f5;
+    }
+
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: 600;
+      color: #ffffff;
+      font-family: 'Toxigenesis';
+      border: 2px solid #2d00f5;
+      padding: 10px;
+      background-color: #000000;
+      cursor: url('images/cursor2.png'), auto;  
+    }
+
+    input[type="text"], select, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-top: 6px;
+      border: 2px solid #2d00f5;
+      border-radius: 0px;
+      font-size: 15px;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+      background-color: #000000;
+      color: #ffffff;
+      font-family: 'Toxigenesis';
+      cursor: url('images/cursor2.png'), auto;  
+    }
+
+    input::placeholder,
+        textarea::placeholder {
+        color: #ffffff;
+        font-family: 'Toxigenesis';
+        opacity: 1;  
+}
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #2d00f5;
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .button-wrapper {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
+    }
+
+    button {
+      background-color: #2d00f5;
+      color: #000000;
+      font-family: 'Toxigenesis';
+      font-weight: bold;
+      font-size: 2rem;
+      border: none;
+      padding: 24px 48px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background-color: #fa4c01;
+    }
+
+    button:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+
+    #downloadAnimalBtn, #downloadEnvironmentBtn {
+        background-color: #2d00f5;
+        color: #000000;
+        font-family: 'Toxigenesis';
+        font-weight: bold;
+        font-size: 1.5rem;
+        border: none;
+        padding: 12px 24px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin-top: 40px;
+    }
+
+    #downloadAnimalBtn:hover, #downloadEnvironmentBtn:hover {
+        background-color: #fa4c01;
+    }
+
+
+    .loading {
+      text-align: center;
+      margin-top: 30px;
+      display: none;
+    }
+
+    .spinner {
+      border: 6px solid #2d00f5;
+      border-top: 6px solid #b8b8b8;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    #result {
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    #result h3 {
+      margin-top: 20px;
+      margin-bottom: 10px;
+      display: none;
+    }
+
+    #generatedAnimal, #generatedEnvironment {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-top: 10px;
+      display: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .image-row {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 40px;
+        flex-wrap: wrap;
+        margin-top: 30px;
+    }
+
+    .image-column {
+        flex: 1;
+        min-width: 300px;
+        max-width: 30%;
+        text-align: center;
+        background-color: #000000;
+        border: 2px solid #2d00f5;
+        padding: 5%;
+        padding-top: 1%;
+        padding-bottom: 3%;
+
+    }
+
+    .image-column img {
+        max-width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        margin-top: 10px;
+    }
+
+
+    #error {
+      color: red;
+      margin-top: 10px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Creature Creator</h1>
+    <a href="animal-book.html">
+  <img src="images/folder2.png" alt="Field Book">
+</a>
+
+   
+  </div>
+  <div class="dnaContainer">
+    <img  src="images/dnaOrange2.png" alt="folder">
+  </div>
+  <div class="container">
+    <h3>This is a speculative evolution simulator. Choose an animal and the conditions in which it hypothetically evolved to visualize this new creature and it's habitat.</h3>
+
+    <form id="evolutionForm">
+    <div class="gridBox">
+      <div class="box">
+        <div class="box2">
+          <label for="animal">Animal (required):</label>
+          <input type="text" id="animal" name="animal" required placeholder="e.g., cat, crocodile..."/>
+        </div>
+        <img  src="images/cell.png" alt="folder">
+      </div>
+
+      <div class="box">
+        <div class="box2">
+          <label for="diet">Diet:</label>
+          <select id="diet" name="diet">
+            <option value="">--Choose--</option>
+            <option value="herbivore">Herbivore</option>
+            <option value="carnivore">Carnivore</option>
+            <option value="omnivore">Omnivore</option>
+            <option value="detritivore">Detritivore</option>
+            <option value="insectivore">Insectivore</option>
+            <option value="frugivore">Frugivore</option>
+            <option value="avivore">Avivore</option>
+            <option value="bacterivore">Bacterivore</option>
+            <option value="piscivore">Piscivore</option>
+            <option value="granivore">Granivore</option>
+            <option value="gummivore">Gummivore</option>
+          </select>
+        </div>
+        <img  src="images/leaf.png" alt="folder">
+      </div>
+
+      <div class="box">
+        <div class="box2">
+          <label for="climate">Climate:</label>
+          <select id="climate" name="climate">
+            <option value="">--Choose--</option>
+            <option value="desert">Desert</option>
+            <option value="forest">Forest</option>
+            <option value="tundra">Tundra</option>
+            <option value="ocean">Ocean</option>
+            <option value="alpine">Alpine</option>
+            <option value="humid continental">Humid Continental</option>
+            <option value="humid subtropical">Humid Subtropical</option>
+            <option value="ice cap">Ice Cap</option>
+            <option value="subarctic">Sub Arctic</option>
+            <option value="semi-arid">Semi-arid</option>
+            <option value="mediterranean">Mediterranean</option>
+            <option value="tropical monsoon">Tropical Monsoon</option>
+            <option value="tropical rainforest">Tropical Rainforest</option>
+            <option value="tropical savanna">Tropical Savanna</option>
+            <option value="polar">Polar</option>
+          </select>
+        </div>
+        <img  src="images/cloud.png" alt="folder">
+      </div>
+
+      <div class="box">
+        <div class="box2">
+          <label for="environment">Environment:</label>
+          <select id="environment">
+            <option value="">--Choose--</option>
+            <option value="mountainous regions">Mountain</option>
+            <option value="deep oceans">Ocean</option>
+            <option value="dark caves">Cave</option>
+            <option value="swampy wetlands">Swamp</option>
+            <option value="arctic tundra">Arctic</option>
+            <option value="dense rainforest">Rainforest</option>
+            <option value="volcanic regions">Volcanic</option>
+            <option value="grasslands">Grassland</option>
+            <option value="forests and woodlands">Forest</option>
+          </select>
+        </div>
+        <img  src="images/tree.png" alt="folder">
+      </div>
+
+      <div class="box">
+        <div class="box2">
+          <label for="timeOfActivity">Time of Activity:</label>
+          <select id="timeOfActivity">
+            <option value="">--Choose--</option>
+            <option value="daytime">Diurnal</option>
+            <option value="nighttime">Nocturnal</option>
+          </select>
+        </div>
+        <img  src="images/sun.png" alt="folder">
+      </div>
+
+      <div class="box">
+        <div class="box2">
+          <label for="movement">Movement Type:</label>
+          <select id="movement">
+            <option value="">--Choose--</option>
+            <option value="walking">Walking</option>
+            <option value="flying">Flying</option>
+            <option value="swimming">Swimming</option>
+            <option value="climbing">Climbing</option>
+            <option value="slithering">Slithering</option>
+          </select>
+        </div>
+        <img  src="images/wings.png" alt="folder">
+      </div>
+
+      <div class="box">
+        <div class="box2">
+          <label for="features">Other features (optional):</label>
+          <textarea id="features" name="features" placeholder="e.g., developed wings, tough skin..."></textarea>
+        </div>
+        <img  src="images/antlers.png" alt="folder">
+      </div>
+
+    </div>
+        <div class="button-wrapper">
+            <button type="submit" id="generateBtn">Generate</button>
+        </div>
+    </form>
+
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>Generating your image...</p>
+    </div>
+
+    <div id="result">
+        <h2 id="generatedName"></h2>
+        <div id="imageContainer" style="display: none;" class="image-row">
+            <div class="image-column">
+                <h4 id="animalTitle">Animal</h4>
+                <img id="generatedAnimal" alt="Generated animal image" />
+                
+            </div>
+            <div class="image-column">
+                <h4 id="environmentTitle">Environment</h4>
+                <img id="generatedEnvironment" alt="Generated environment image" />
+                
+            </div>
+        </div>
+
+      <p id="error"></p>
+    </div>
+  </div>
+
+  <script>
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      const evolutionForm = document.getElementById('evolutionForm');
+      const loadingDiv = document.getElementById('loading');
+      const generateBtn = document.getElementById('generateBtn');
+      const generatedAnimal = document.getElementById('generatedAnimal');
+      const generatedEnvironment = document.getElementById('generatedEnvironment');
+      const generatedName = document.getElementById('generatedName');
+      const errorP = document.getElementById('error');
+
+      evolutionForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+    
+        const animal = document.getElementById('animal').value.trim();
+        const diet = document.getElementById('diet').value;
+        const climate = document.getElementById('climate').value;
+        const environment = document.getElementById('environment').value;
+        const timeOfActivity = document.getElementById('timeOfActivity').value;
+        const movement = document.getElementById('movement').value;
+        const features = document.getElementById('features').value.trim();
+
+        if (!animal) {
+          alert('Please enter an animal');
+          return;
+        }
+
+        
+        loadingDiv.style.display = 'block';
+        generateBtn.disabled = true;
+        errorP.style.display = 'none';
+
+        try {
+          
+          const animalPrompt = `Create a realistic illustration of a ${animal} that evolved to live in ${climate || "a new"} climate. ` +
+            `${environment ? `Environment: ${environment}. ` : ''}` +
+            `${timeOfActivity ? `Active during: ${timeOfActivity}. ` : ''}` +
+            `${movement ? `Movement: ${movement}. ` : ''}` +
+            `${features ? `Features: ${features}. ` : ''}` +
+            `${diet ? `Diet: ${diet}. ` : ''}` +
+            `Highly detailed, realistic, 4K quality. No text in image.`;
+
+          const environmentPrompt = `Create a realistic ${climate || ""} ${environment || "environment"} landscape. ` +
+            `${timeOfActivity ? `Time: ${timeOfActivity}. ` : ''}` +
+            `No animals or text. Highly detailed, 4K quality.`;
+
+          const namePrompt = `Create a scientific name (binomial nomenclature) for a ${animal} ` +
+            `that evolved to live in ${climate || "new conditions"}. ` +
+            `${environment ? `Environment: ${environment}. ` : ''}` +
+            `Respond only with the Latin name.`;
+
+         
+          const response = await fetch('http://localhost:4000/generateImages', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              animalPrompt,
+              environmentPrompt,
+              namePrompt
+            }),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || 'Failed to generate images');
+          }
+
+         
+          generatedAnimal.src = data.animalImage;
+          generatedEnvironment.src = data.environmentImage;
+          generatedName.textContent = data.name;
+          
+          document.getElementById('imageContainer').style.display = 'flex';
+          generatedAnimal.style.display = 'block';
+          generatedEnvironment.style.display = 'block';
+          generatedName.style.display = 'block';
+           document.getElementById('animalTitle').style.display = 'block';
+          document.getElementById('environmentTitle').style.display = 'block';
+
+          
+          /*const creatureData = {
+            name: data.name,
+            animalImage: data.animalImage,
+            environmentImage: data.environmentImage,
+            attributes: {
+              animal,
+              diet,
+              climate,
+              environment,
+              timeOfActivity,
+              movement,
+              features
+            },
+            timestamp: new Date().toISOString()
+          };*/
+
+         
+const creatureData = {
+    name: data.name,
+    animalImage: data.animalImage,
+    environmentImage: data.environmentImage,
+    attributes: {
+        animal,
+        diet,
+        climate,
+        environment,
+        timeOfActivity,
+        movement,
+        features
+    },
+    timestamp: new Date().toISOString()
+};
+
+
+          
+          const savedCreatures = JSON.parse(localStorage.getItem('animalBooks') || '[]');
+          savedCreatures.unshift(creatureData);
+          localStorage.setItem('animalBooks', JSON.stringify(savedCreatures));
+
+        } catch (err) {
+          console.error('Error:', err);
+          errorP.textContent = err.message;
+          errorP.style.display = 'block';
+        } finally {
+          loadingDiv.style.display = 'none';
+          generateBtn.disabled = false;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
